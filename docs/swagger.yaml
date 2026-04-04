@@ -1,0 +1,273 @@
+basePath: /api
+definitions:
+  auth.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  auth.loginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  auth.refreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  auth.signupRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  clips.clipActionResponse:
+    properties:
+      hash:
+        type: string
+      message:
+        type: string
+    type: object
+  health.healthChecks:
+    properties:
+      database:
+        type: string
+    type: object
+  health.healthResponse:
+    properties:
+      checks:
+        $ref: '#/definitions/health.healthChecks'
+      status:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: Self-hostable backend API for Trophy.
+  title: Trophy API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      description: Sign in with username and password to get access tokens
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.loginRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: User login
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      description: Use a refresh token to get a new access token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.refreshRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Get new tokens
+      tags:
+      - Auth
+  /auth/signup:
+    post:
+      description: Sign up with username and password to create a new account
+      parameters:
+      - description: New account details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.signupRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create new account
+      tags:
+      - Auth
+  /clips/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a video clip (automatically converted to WebM if needed)
+      parameters:
+      - description: Optional title for your clip
+        in: formData
+        name: title
+        type: string
+      - description: Video file to upload
+        in: formData
+        name: video
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/clips.clipActionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Upload a clip
+      tags:
+      - Clips
+  /clips/{hash}:
+    delete:
+      description: Delete a clip you own by its hash
+      parameters:
+      - description: Clip hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete your clip
+      tags:
+      - Clips
+    get:
+      description: Get a clip by its hash as a WebM video file
+      parameters:
+      - description: Clip hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Download a clip
+      tags:
+      - Clips
+  /health:
+    get:
+      description: Check if the API and database are healthy
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/health.healthResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/health.healthResponse'
+      summary: Health check
+      tags:
+      - Health
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
