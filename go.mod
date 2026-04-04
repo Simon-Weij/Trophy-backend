@@ -9,13 +9,13 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.9.1
 	github.com/joho/godotenv v1.5.1
-	github.com/swaggo/swag v1.16.6
 	golang.org/x/crypto v0.49.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
 )
 
 require (
+	github.com/swaggo/swag v1.16.6 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/go-openapi/jsonpointer v0.22.4 // indirect

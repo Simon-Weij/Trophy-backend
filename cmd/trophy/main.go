@@ -1,12 +1,11 @@
 package main
 
 import (
-	_ "trophy/docs"
+	"time"
 	"trophy/internal/database"
 	authRouter "trophy/internal/router/auth"
 	clipRouter "trophy/internal/router/clips"
 	healthRouter "trophy/internal/router/health"
-	"time"
 
 	"github.com/gofiber/contrib/v3/swaggo"
 	"github.com/gofiber/fiber/v3"
