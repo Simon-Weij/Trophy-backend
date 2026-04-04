@@ -1,0 +1,34 @@
+name: regenerate documentation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+
+jobs:
+  regenerate_docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.1'
+
+      - name: Install swag
+        run: go install github.com/swaggo/swag/cmd/swag@latest
+
+      - name: Regenerate docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          rm -rf docs/
+          swag init -g cmd/trophy/main.go --parseInternal
+          git add docs/
+          git diff --staged --quiet || git commit -m "docs: regenerate"
+          git push -u origin docs
