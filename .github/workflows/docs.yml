@@ -31,4 +31,4 @@ jobs:
           swag init -g cmd/trophy/main.go --parseInternal
           git add docs/
           git diff --staged --quiet || git commit -m "docs: regenerate"
-          git push -u origin docs
+          git push origin HEAD:${{ github.ref }}
