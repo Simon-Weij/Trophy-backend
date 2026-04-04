@@ -11,9 +11,16 @@ jobs:
   regenerate_docs:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+
 
       - name: Install Go
         uses: actions/setup-go@v6
@@ -25,10 +32,11 @@ jobs:
 
       - name: Regenerate docs
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           rm -rf docs/
           swag init -g cmd/trophy/main.go --parseInternal
-          git add docs/
-          git diff --staged --quiet || git commit -m "docs: regenerate"
-          git push origin HEAD:${{ github.ref }}
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "docs: regenerate"
+          file_pattern: "docs/"
