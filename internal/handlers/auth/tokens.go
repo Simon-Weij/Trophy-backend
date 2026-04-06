@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"trophy/internal/database"
 	"time"
+	"trophy/internal/database"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -33,6 +33,10 @@ func generateJwt(username string, duration time.Duration) (string, error) {
 }
 
 func GenerateTokenPair(db *gorm.DB, user database.User) (*TokenResponse, error) {
+	if db == nil {
+		return nil, gorm.ErrInvalidDB
+	}
+
 	accessToken, err := generateJwt(user.Username, 15*time.Minute)
 	if err != nil {
 		return nil, err
