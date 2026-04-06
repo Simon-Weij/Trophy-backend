@@ -339,6 +339,28 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/health/protected": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Test endpoint that requires authentication",
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Protected test endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
         }
     },
     "definitions": {

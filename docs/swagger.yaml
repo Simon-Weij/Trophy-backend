@@ -263,6 +263,19 @@ paths:
       summary: Health check
       tags:
       - Health
+  /health/protected:
+    get:
+      description: Test endpoint that requires authentication
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+      - BearerAuth: []
+      summary: Protected test endpoint
+      tags:
+      - Health
 schemes:
 - http
 securityDefinitions:
