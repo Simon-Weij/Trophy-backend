@@ -26,10 +26,17 @@ type signupRequest struct {
 // @Failure 409 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /auth/signup [post]
-func Signup(c fiber.Ctx) error {
+func (handler *Handler) Signup(c fiber.Ctx) error {
 	var body signupRequest
+
 	if err := apphttp.Bind(c, &body); err != nil {
 		return err
+	}
+
+	if body.Username == "" || body.Password == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Username and password are required",
+		})
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
@@ -42,7 +49,7 @@ func Signup(c fiber.Ctx) error {
 		Password: string(hashedPassword),
 	}
 
-	if err := database.DB.Create(&user).Error; err != nil {
+	if err := handler.db.Create(&user).Error; err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 			return c.Status(fiber.StatusConflict).JSON(fiber.Map{
@@ -54,7 +61,7 @@ func Signup(c fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON("Something went wrong")
 	}
 
-	tokens, err := GenerateTokenPair(user)
+	tokens, err := GenerateTokenPair(handler.db, user)
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

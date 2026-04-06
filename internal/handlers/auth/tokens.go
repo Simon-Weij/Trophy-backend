@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Claims struct {
@@ -31,7 +32,7 @@ func generateJwt(username string, duration time.Duration) (string, error) {
 	return token.SignedString(jwtSigningKey())
 }
 
-func GenerateTokenPair(user database.User) (*TokenResponse, error) {
+func GenerateTokenPair(db *gorm.DB, user database.User) (*TokenResponse, error) {
 	accessToken, err := generateJwt(user.Username, 15*time.Minute)
 	if err != nil {
 		return nil, err
@@ -46,7 +47,7 @@ func GenerateTokenPair(user database.User) (*TokenResponse, error) {
 		ExpiresAt: expiresAt,
 	}
 
-	if err := database.DB.Create(&dbToken).Error; err != nil {
+	if err := db.Create(&dbToken).Error; err != nil {
 		return nil, err
 	}
 

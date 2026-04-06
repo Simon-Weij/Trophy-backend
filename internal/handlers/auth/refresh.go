@@ -1,9 +1,9 @@
 package auth
 
 import (
+	"time"
 	"trophy/internal/database"
 	apphttp "trophy/internal/http"
-	"time"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -22,25 +22,25 @@ type refreshRequest struct {
 // @Failure 401
 // @Failure 500
 // @Router /auth/refresh [post]
-func Refresh(c fiber.Ctx) error {
+func (handler *Handler) Refresh(c fiber.Ctx) error {
 	var body refreshRequest
 	if err := apphttp.Bind(c, &body); err != nil {
 		return err
 	}
 
 	var storedToken database.RefreshToken
-	if err := database.DB.First(&storedToken, "token = ? AND expires_at > ?", body.RefreshToken, time.Now()).Error; err != nil {
+	if err := handler.db.First(&storedToken, "token = ? AND expires_at > ?", body.RefreshToken, time.Now()).Error; err != nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
 	var user database.User
-	if err := database.DB.First(&user, storedToken.UserID).Error; err != nil {
+	if err := handler.db.First(&user, storedToken.UserID).Error; err != nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	database.DB.Delete(&storedToken)
+	handler.db.Delete(&storedToken)
 
-	tokens, err := GenerateTokenPair(user)
+	tokens, err := GenerateTokenPair(handler.db, user)
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

@@ -23,14 +23,20 @@ type loginRequest struct {
 // @Failure 401
 // @Failure 500
 // @Router /auth/login [post]
-func Login(c fiber.Ctx) error {
+func (handler *Handler) Login(c fiber.Ctx) error {
 	var body loginRequest
 	if err := apphttp.Bind(c, &body); err != nil {
 		return err
 	}
 
+	if body.Username == "" || body.Password == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Username and password are required",
+		})
+	}
+
 	var user database.User
-	if err := database.DB.First(&user, "username = ?", body.Username).Error; err != nil {
+	if err := handler.db.First(&user, "username = ?", body.Username).Error; err != nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
@@ -38,7 +44,7 @@ func Login(c fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	tokens, err := GenerateTokenPair(user)
+	tokens, err := GenerateTokenPair(handler.db, user)
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

@@ -44,7 +44,7 @@ type clipActionResponse struct {
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /clips/ [post]
-func UploadClip(c fiber.Ctx) error {
+func (handler *Handler) UploadClip(c fiber.Ctx) error {
 	var body uploadRequest
 	if err := apphttp.Bind(c, &body); err != nil {
 		return err
@@ -62,7 +62,7 @@ func UploadClip(c fiber.Ctx) error {
 	}
 
 	var existingClip database.Clip
-	if err := database.DB.Select("id").Where("video_hash = ?", hash).First(&existingClip).Error; err == nil {
+	if err := handler.db.Select("id").Where("video_hash = ?", hash).First(&existingClip).Error; err == nil {
 		return c.JSON(fiber.Map{
 			"message": "Video already exists",
 			"hash":    hash,
@@ -77,7 +77,7 @@ func UploadClip(c fiber.Ctx) error {
 		return fiber.ErrInternalServerError
 	}
 
-	userID, err := getUserID(c)
+	userID, err := handler.getUserID(c)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func UploadClip(c fiber.Ctx) error {
 		UserID:    userID,
 	}
 
-	if err := database.DB.Create(&newClip).Error; err != nil {
+	if err := handler.db.Create(&newClip).Error; err != nil {
 		log.Errorf("Failed to save clip metadata for hash %s: %v", hash, err)
 		return fiber.ErrInternalServerError
 	}
@@ -99,14 +99,14 @@ func UploadClip(c fiber.Ctx) error {
 	})
 }
 
-func getUserID(context fiber.Ctx) (uint, error) {
+func (handler *Handler) getUserID(context fiber.Ctx) (uint, error) {
 	username, ok := context.Locals("username").(string)
 	if !ok || strings.TrimSpace(username) == "" {
 		return 0, fiber.ErrUnauthorized
 	}
 
 	var user database.User
-	if err := database.DB.Select("id").Where("username = ?", username).First(&user).Error; err != nil {
+	if err := handler.db.Select("id").Where("username = ?", username).First(&user).Error; err != nil {
 		return 0, fiber.ErrUnauthorized
 	}
 

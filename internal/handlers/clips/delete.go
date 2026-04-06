@@ -22,8 +22,8 @@ import (
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /clips/{hash} [delete]
-func DeleteClip(c fiber.Ctx) error {
-	userID, err := getUserID(c)
+func (handler *Handler) DeleteClip(c fiber.Ctx) error {
+	userID, err := handler.getUserID(c)
 	if err != nil {
 		log.Errorf("Couldn't get userID: %v", err)
 		return err
@@ -31,7 +31,7 @@ func DeleteClip(c fiber.Ctx) error {
 
 	hash := c.Params("hash")
 
-	userOwnsClip, err := userOwnsClip(userID, hash)
+	userOwnsClip, err := handler.userOwnsClip(userID, hash)
 	if err != nil {
 		log.Errorf("Couldn't check if the user owned the clip for %s", userID)
 		return fiber.ErrInternalServerError
@@ -41,23 +41,23 @@ func DeleteClip(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "you don't own this video",
 		})
-	} else {
-		var clip database.Clip
-		result := database.DB.Delete(&clip, "user_id = ? AND video_hash = ?", userID, hash)
-		if result.Error != nil {
-			log.Errorf("Couldn't delete clip for user %d and hash %s: %v", userID, hash, result.Error)
-			return fiber.ErrInternalServerError
-		}
-		if result.RowsAffected == 0 {
-			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "video doesn't exist",
-			})
-		}
-		if err := deleteFile(hash); err != nil {
-			return fiber.ErrInternalServerError
-		}
-		return c.SendStatus(fiber.StatusOK)
 	}
+
+	var clip database.Clip
+	result := handler.db.Delete(&clip, "user_id = ? AND video_hash = ?", userID, hash)
+	if result.Error != nil {
+		log.Errorf("Couldn't delete clip for user %d and hash %s: %v", userID, hash, result.Error)
+		return fiber.ErrInternalServerError
+	}
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "video doesn't exist",
+		})
+	}
+	if err := deleteFile(hash); err != nil {
+		return fiber.ErrInternalServerError
+	}
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func deleteFile(hash string) error {
@@ -78,9 +78,9 @@ func deleteFile(hash string) error {
 	return nil
 }
 
-func userOwnsClip(userID uint, hash string) (bool, error) {
+func (handler *Handler) userOwnsClip(userID uint, hash string) (bool, error) {
 	var clip database.Clip
-	result := database.DB.Where("user_id = ? AND video_hash = ?", userID, hash).First(&clip)
+	result := handler.db.Where("user_id = ? AND video_hash = ?", userID, hash).First(&clip)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {

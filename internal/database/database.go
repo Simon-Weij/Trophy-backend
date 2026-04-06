@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/gofiber/fiber/v3/log"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -39,21 +38,36 @@ type Comment struct {
 	UserID  uint   `gorm:"not null"`
 }
 
-var DB *gorm.DB
+func Connect() (*gorm.DB, error) {
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		host := os.Getenv("DB_HOST")
+		if host == "" {
+			host = "localhost"
+		}
 
-func MigrateDatabases() {
-	var err error
+		port := os.Getenv("DB_PORT")
+		if port == "" {
+			port = "5432"
+		}
 
-	user := os.Getenv("DB_USERNAME")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
-	sslmode := os.Getenv("SSL_MODE")
+		user := os.Getenv("DB_USERNAME")
+		password := os.Getenv("DB_PASSWORD")
+		name := os.Getenv("DB_NAME")
 
-	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s port=5432 sslmode=%s", user, password, dbname, sslmode)
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatalf("Couldn't connect to database %v", err)
+		dsn = fmt.Sprintf(
+			"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+			host,
+			port,
+			user,
+			password,
+			name,
+		)
 	}
 
-	DB.AutoMigrate(&User{}, &RefreshToken{}, &Clip{}, &Comment{})
+	return gorm.Open(postgres.Open(dsn), &gorm.Config{})
+}
+
+func MigrateDatabases(db *gorm.DB) error {
+	return db.AutoMigrate(&User{}, &RefreshToken{}, &Clip{}, &Comment{})
 }
