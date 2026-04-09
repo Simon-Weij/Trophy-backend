@@ -20,13 +20,12 @@ jobs:
           ref: ${{ github.head_ref }}
           persist-credentials: true
 
-      - name: Install Go
-        uses: actions/setup-go@v6
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          go-version: "1.26.1"
+          go-version-file: "go.mod"
 
-      - name: Install swag
-        run: go install github.com/swaggo/swag/cmd/swag@latest
+      - run: go install github.com/swaggo/swag/cmd/swag@latest
 
       - name: Regenerate docs
         run: |
