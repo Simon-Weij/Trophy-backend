@@ -34,9 +34,9 @@ jobs:
         run: go install github.com/swaggo/swag/cmd/swag@v1.16.6
 
       - name: Run formatters
-      - run: |
+        run: |
           go fmt
-          swag fmt
+          ~/go/bin/swag fmt
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7
