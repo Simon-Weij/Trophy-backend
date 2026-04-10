@@ -8,13 +8,14 @@ import (
 )
 
 // GetClip serves a clip file by its hash.
-// @Summary Download a clip
-// @Description Get a clip by its hash as a WebM video file
-// @Tags Clips
-// @Param hash path string true "Clip hash"
-// @Success 200 {file} file
-// @Failure 404 {object} map[string]string
-// @Router /clips/{hash} [get]
+//
+//	@Summary		Download a clip
+//	@Description	Get a clip by its hash as a WebM video file
+//	@Tags			Clips
+//	@Param			hash	path		string	true	"Clip hash"
+//	@Success		200		{file}		file
+//	@Failure		404		{object}	map[string]string
+//	@Router			/clips/{hash} [get]
 func GetClip(c fiber.Ctx) error {
 	hash := c.Params("hash")
 

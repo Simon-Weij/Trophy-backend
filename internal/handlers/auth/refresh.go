@@ -13,15 +13,16 @@ type refreshRequest struct {
 }
 
 // Refresh rotates a refresh token and returns a new token pair.
-// @Summary Get new tokens
-// @Description Use a refresh token to get a new access token
-// @Tags Auth
-// @Param request body refreshRequest true "Refresh token"
-// @Success 200 {object} TokenResponse
-// @Failure 400 {object} map[string]string
-// @Failure 401
-// @Failure 500
-// @Router /auth/refresh [post]
+//
+//	@Summary		Get new tokens
+//	@Description	Use a refresh token to get a new access token
+//	@Tags			Auth
+//	@Param			request	body		refreshRequest	true	"Refresh token"
+//	@Success		200		{object}	TokenResponse
+//	@Failure		400		{object}	map[string]string
+//	@Failure		401
+//	@Failure		500
+//	@Router			/auth/refresh [post]
 func (handler *Handler) Refresh(c fiber.Ctx) error {
 	var body refreshRequest
 	if err := apphttp.Bind(c, &body); err != nil {
