@@ -15,11 +15,15 @@ jobs:
 
       - uses: docker/setup-docker-action@v5
 
+      - name: Cache Docker layers
+        uses: ScribeMD/docker-cache@0.5.0
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
-
-      - run: go mod download
+          cache-dependency-path: "**/go.sum"
 
       - run: go test ./...
