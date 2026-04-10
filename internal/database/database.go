@@ -43,7 +43,7 @@ func Connect() (*gorm.DB, error) {
 	if dsn == "" {
 		host := os.Getenv("DB_HOST")
 		if host == "" {
-			host = "localhost"
+			host = "127.0.0.1"
 		}
 
 		port := os.Getenv("DB_PORT")
