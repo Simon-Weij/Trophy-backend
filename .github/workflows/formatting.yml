@@ -8,35 +8,37 @@ on:
 
 jobs:
   format_code:
-    - name: Checkout code
-      uses: actions/checkout@v6
-      with:
-        ref: ${{ github.head_ref }}
-        persist-credentials: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
 
-    - name: Setup Go
-      uses: actions/setup-go@v5
-      with:
-        go-version-file: "go.mod"
-        cache-dependency-path: "**/go.sum"
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+          cache-dependency-path: "**/go.sum"
 
-    - name: Cache Swag binary
-      id: cache-swag
-      uses: actions/cache@v4
-      with:
-        path: ~/go/bin/swag
-        key: ${{ runner.os }}-swag-v1.16.6
+      - name: Cache Swag binary
+        id: cache-swag
+        uses: actions/cache@v4
+        with:
+          path: ~/go/bin/swag
+          key: ${{ runner.os }}-swag-v1.16.6
 
-    - name: Install Swag
-      if: steps.cache-swag.outputs.cache-hit != 'true'
-      run: go install github.com/swaggo/swag/cmd/swag@v1.16.6
+      - name: Install Swag
+        if: steps.cache-swag.outputs.cache-hit != 'true'
+        run: go install github.com/swaggo/swag/cmd/swag@v1.16.6
 
-    - name: Run formatters
-    - run: |
-        go fmt
-        swag fmt
+      - name: Run formatters
+      - run: |
+          go fmt
+          swag fmt
 
-    - name: Commit changes
-      uses: stefanzweifel/git-auto-commit-action@v7
-      with:
-        commit_message: "formatters: ran formatters"
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "formatters: ran formatters"
