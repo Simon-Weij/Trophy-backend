@@ -15,15 +15,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// @title Trophy API
-// @version 1.0
-// @description Self-hostable backend API for Trophy.
-// @host localhost:3000
-// @BasePath /api
-// @schemes http
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
+// @title						Trophy API
+// @version					1.0
+// @description				Self-hostable backend API for Trophy.
+// @host						localhost:3000
+// @BasePath					/api
+// @schemes					http
+// @securityDefinitions.apikey	BearerAuth
+// @in							header
+// @name						Authorization
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Warn("No .env file found!")

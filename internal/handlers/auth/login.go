@@ -14,15 +14,16 @@ type loginRequest struct {
 }
 
 // Login authenticates a user and returns a token pair.
-// @Summary User login
-// @Description Sign in with username and password to get access tokens
-// @Tags Auth
-// @Param request body loginRequest true "Login credentials"
-// @Success 200 {object} TokenResponse
-// @Failure 400 {object} map[string]string
-// @Failure 401
-// @Failure 500
-// @Router /auth/login [post]
+//
+//	@Summary		User login
+//	@Description	Sign in with username and password to get access tokens
+//	@Tags			Auth
+//	@Param			request	body		loginRequest	true	"Login credentials"
+//	@Success		200		{object}	TokenResponse
+//	@Failure		400		{object}	map[string]string
+//	@Failure		401
+//	@Failure		500
+//	@Router			/auth/login [post]
 func (handler *Handler) Login(c fiber.Ctx) error {
 	var body loginRequest
 	if err := apphttp.Bind(c, &body); err != nil {

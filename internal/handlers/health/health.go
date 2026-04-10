@@ -14,12 +14,13 @@ type healthResponse struct {
 }
 
 // Health returns service health and dependency checks.
-// @Summary Health check
-// @Description Check if the API and database are healthy
-// @Tags Health
-// @Success 200 {object} healthResponse
-// @Failure 503 {object} healthResponse
-// @Router /health [get]
+//
+//	@Summary		Health check
+//	@Description	Check if the API and database are healthy
+//	@Tags			Health
+//	@Success		200	{object}	healthResponse
+//	@Failure		503	{object}	healthResponse
+//	@Router			/health [get]
 func (handler *Handler) Health(ctx fiber.Ctx) error {
 	sqlDB, err := handler.db.DB()
 	if err != nil || sqlDB.Ping() != nil {
@@ -40,13 +41,14 @@ func (handler *Handler) Health(ctx fiber.Ctx) error {
 }
 
 // Protected returns 200 OK for testing protected endpoints.
-// @Summary Protected test endpoint
-// @Description Test endpoint that requires authentication
-// @Tags Health
-// @Security BearerAuth
-// @Success 200
-// @Failure 401
-// @Router /health/protected [get]
+//
+//	@Summary		Protected test endpoint
+//	@Description	Test endpoint that requires authentication
+//	@Tags			Health
+//	@Security		BearerAuth
+//	@Success		200
+//	@Failure		401
+//	@Router			/health/protected [get]
 func (handler *Handler) Protected(ctx fiber.Ctx) error {
 	return ctx.SendStatus(fiber.StatusOK)
 }

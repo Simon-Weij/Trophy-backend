@@ -2,9 +2,9 @@ package clips
 
 import (
 	"errors"
-	"trophy/internal/database"
 	"os"
 	"path/filepath"
+	"trophy/internal/database"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
@@ -12,16 +12,17 @@ import (
 )
 
 // DeleteClip deletes a clip owned by the authenticated user.
-// @Summary Delete your clip
-// @Description Delete a clip you own by its hash
-// @Tags Clips
-// @Param hash path string true "Clip hash"
-// @Security BearerAuth
-// @Success 200 {object} map[string]string
-// @Failure 401 {object} map[string]string
-// @Failure 404 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /clips/{hash} [delete]
+//
+//	@Summary		Delete your clip
+//	@Description	Delete a clip you own by its hash
+//	@Tags			Clips
+//	@Param			hash	path	string	true	"Clip hash"
+//	@Security		BearerAuth
+//	@Success		200	{object}	map[string]string
+//	@Failure		401	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Failure		500	{object}	map[string]string
+//	@Router			/clips/{hash} [delete]
 func (handler *Handler) DeleteClip(c fiber.Ctx) error {
 	userID, err := handler.getUserID(c)
 	if err != nil {

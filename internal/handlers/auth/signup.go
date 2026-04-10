@@ -17,15 +17,16 @@ type signupRequest struct {
 }
 
 // Signup creates a new user account and returns a token pair.
-// @Summary Create new account
-// @Description Sign up with username and password to create a new account
-// @Tags Auth
-// @Param request body signupRequest true "New account details"
-// @Success 200 {object} TokenResponse
-// @Failure 400 {object} map[string]string
-// @Failure 409 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /auth/signup [post]
+//
+//	@Summary		Create new account
+//	@Description	Sign up with username and password to create a new account
+//	@Tags			Auth
+//	@Param			request	body		signupRequest	true	"New account details"
+//	@Success		200		{object}	TokenResponse
+//	@Failure		400		{object}	map[string]string
+//	@Failure		409		{object}	map[string]string
+//	@Failure		500		{object}	map[string]string
+//	@Router			/auth/signup [post]
 func (handler *Handler) Signup(c fiber.Ctx) error {
 	var body signupRequest
 

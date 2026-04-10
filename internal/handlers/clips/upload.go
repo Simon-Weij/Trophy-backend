@@ -5,15 +5,15 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"trophy/internal/database"
-	apphttp "trophy/internal/http"
-	"trophy/internal/video"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+	"trophy/internal/database"
+	apphttp "trophy/internal/http"
+	"trophy/internal/video"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
@@ -32,18 +32,19 @@ type clipActionResponse struct {
 }
 
 // UploadClip uploads a new clip and stores metadata.
-// @Summary Upload a clip
-// @Description Upload a video clip (automatically converted to WebM if needed)
-// @Tags Clips
-// @Accept multipart/form-data
-// @Param title formData string false "Optional title for your clip"
-// @Param video formData file true "Video file to upload"
-// @Security BearerAuth
-// @Success 200 {object} clipActionResponse
-// @Failure 400 {object} map[string]string
-// @Failure 401 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /clips/ [post]
+//
+//	@Summary		Upload a clip
+//	@Description	Upload a video clip (automatically converted to WebM if needed)
+//	@Tags			Clips
+//	@Accept			multipart/form-data
+//	@Param			title	formData	string	false	"Optional title for your clip"
+//	@Param			video	formData	file	true	"Video file to upload"
+//	@Security		BearerAuth
+//	@Success		200	{object}	clipActionResponse
+//	@Failure		400	{object}	map[string]string
+//	@Failure		401	{object}	map[string]string
+//	@Failure		500	{object}	map[string]string
+//	@Router			/clips/ [post]
 func (handler *Handler) UploadClip(c fiber.Ctx) error {
 	var body uploadRequest
 	if err := apphttp.Bind(c, &body); err != nil {
