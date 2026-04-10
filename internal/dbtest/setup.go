@@ -26,7 +26,7 @@ func SetupDB(t *testing.T) *gorm.DB {
 		testcontainers.WithExposedPorts("5432/tcp"),
 		testcontainers.WithWaitStrategy(
 			wait.ForAll(
-				wait.ForLog("database system is ready to accept connections"),
+				wait.ForLog("database system is ready to accept connections").WithOccurrence(2),
 				wait.ForListeningPort("5432/tcp"),
 			),
 		),

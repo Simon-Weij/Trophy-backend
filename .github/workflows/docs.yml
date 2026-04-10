@@ -24,8 +24,18 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
+          cache-dependency-path: "**/go.sum"
 
-      - run: go install github.com/swaggo/swag/cmd/swag@latest
+      - name: Cache Swag binary
+        id: cache-swag
+        uses: actions/cache@v4
+        with:
+          path: ~/go/bin/swag
+          key: ${{ runner.os }}-swag-v1.16.6
+
+      - name: Install Swag
+        if: steps.cache-swag.outputs.cache-hit != 'true'
+        run: go install github.com/swaggo/swag/cmd/swag@v1.16.6
 
       - name: Regenerate docs
         run: |
