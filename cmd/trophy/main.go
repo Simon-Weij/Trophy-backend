@@ -13,6 +13,8 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/limiter"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/joho/godotenv"
+
+	_ "trophy/docs"
 )
 
 // @title						Trophy API
